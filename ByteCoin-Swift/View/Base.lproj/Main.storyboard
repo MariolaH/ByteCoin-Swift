@@ -88,6 +88,11 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="IfN-z6-4FK" secondAttribute="trailing" id="xv9-Ua-tq1"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="bitcoinLabel" destination="E9b-5v-a9m" id="R9L-A7-2Rv"/>
+                        <outlet property="currencyLabel" destination="Pa1-l4-s5J" id="Llo-2d-2nM"/>
+                        <outlet property="currencyPicker" destination="6CB-s4-Wdm" id="gy8-yX-8h5"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
