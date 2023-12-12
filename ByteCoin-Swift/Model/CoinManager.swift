@@ -33,23 +33,19 @@ enum Enviroment {
 }
 
 struct CoinManager {
-    let baseURL = "https://rest.coinapi.io/v1/exchangerate/BTC/USD?apikey=\(Enviroment.apiKey)"
+    let baseURL = "https://rest.coinapi.io/v1/exchangerate/BTC"
     let apiKey = Enviroment.apiKey
+    var delegate: CoinManagerDelegate?
     
-//    func fetchRate() {
-//        let urlString = baseURL
-//        performRequest(with: urlString)
-//    }
-    
-    func getCoinPrice(for currency: String) {
-        let urlString = "https://rest.coinapi.io/v1/exchangerate/BTC/\(currency)?apikey=\(Enviroment.apiKey)"
-        print(urlString)
-        performRequest(with: urlString)
-    }
+    //    func fetchRate() {
+    //        let urlString = baseURL
+    //        performRequest(with: urlString)
+    //    }
     
     let currencyArray = ["AUD", "BRL","CAD","CNY","EUR","GBP","HKD","IDR","ILS","INR","JPY","MXN","NOK","NZD","PLN","RON","RUB","SEK","SGD","USD","ZAR"]
     
-    func performRequest(with urlString: String) {
+    func getCoinPrice(for currency: String) {
+        let urlString = "\(baseURL)/\(currency)?apikey=\(Enviroment.apiKey)"
         
         //1. create URL
         if let url = URL(string: urlString){
@@ -63,13 +59,28 @@ struct CoinManager {
                     return
                 }
                 if let safeData = data {
-                        let dataString = String(decoding: safeData, as: UTF8.self)
-                        print("Received data as string: \(dataString ?? "Invalid data")")
+                    // line is crucial for converting raw JSON data received from a network request into a usable format, specifically extracting the Bitcoin price from that data.
+                    let bitcoinPrice = self.parseJSON(safeData)
+                    //Format the data we got back as a string to be able to print it.
+                    //                        let dataString = String(decoding: safeData, as: UTF8.self)
+                    //                    print("Received data as string: \(dataString )")
                 }
             }
-                task.resume()
-                //4. start the task
+            task.resume()
+            //4. start the task
         }
     }
     
+    func parseJSON(_ data: Data) -> Double? {
+        let decoder = JSONDecoder()
+        do{
+            let decodedData = try decoder.decode(CoinData.self, from: data)
+            let lastPrice = decodedData.rate
+            print(lastPrice)
+            return lastPrice
+        } catch {
+            delegate?.didFailWithError(error: error)
+            return nil
+        }
+    }
 }
