@@ -47,3 +47,15 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
 
 }
 
+extension ViewController: CoinManagerDelegate {
+    
+    func didUpdateRate(_ coinManager: CoinManager) {
+    }
+    
+    func didFailWithError(error: Error) {
+        print(error)
+    }
+    
+    
+}
+
