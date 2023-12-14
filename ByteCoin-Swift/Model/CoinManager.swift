@@ -9,6 +9,7 @@ import UIKit
 
 protocol CoinManagerDelegate {
     func didFailWithError(error: Error)
+    func didUpdateRate(price: String, currency: String)
     
 }
 
@@ -37,11 +38,6 @@ struct CoinManager {
     let apiKey = Enviroment.apiKey
     var delegate: CoinManagerDelegate?
     
-    //    func fetchRate() {
-    //        let urlString = baseURL
-    //        performRequest(with: urlString)
-    //    }
-    
     let currencyArray = ["AUD", "BRL","CAD","CNY","EUR","GBP","HKD","IDR","ILS","INR","JPY","MXN","NOK","NZD","PLN","RON","RUB","SEK","SGD","USD","ZAR"]
     
     func getCoinPrice(for currency: String) {
@@ -60,14 +56,17 @@ struct CoinManager {
                 }
                 if let safeData = data {
                     // line is crucial for converting raw JSON data received from a network request into a usable format, specifically extracting the Bitcoin price from that data.
-                    let bitcoinPrice = self.parseJSON(safeData)
+                    if let bitcoinPrice = self.parseJSON(safeData){
+                        let priceString = String(format: "%.2f", bitcoinPrice)
+                        self.delegate?.didUpdateRate(price: priceString, currency: currency)
+                    }
                     //Format the data we got back as a string to be able to print it.
                     //                        let dataString = String(decoding: safeData, as: UTF8.self)
                     //                    print("Received data as string: \(dataString )")
                 }
             }
-            task.resume()
             //4. start the task
+            task.resume()
         }
     }
     

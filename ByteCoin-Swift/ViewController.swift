@@ -7,9 +7,40 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class ViewController: UIViewController {
     
-    let coinManager = CoinManager()
+    var coinManager = CoinManager()
+
+    @IBOutlet weak var bitcoinLabel: UILabel!
+    @IBOutlet weak var currencyLabel: UILabel!
+    @IBOutlet weak var currencyPicker: UIPickerView!
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        currencyPicker.dataSource = self
+        //sets the VC class as the delegate of the currencyPicker
+        currencyPicker.delegate = self
+        coinManager.delegate = self
+    }
+}
+
+//MARK: - CoinManagerDelegate
+extension ViewController: CoinManagerDelegate {
+    
+    func didUpdateRate(price: String, currency: String) {
+        DispatchQueue.main.async {
+            self.bitcoinLabel.text = price
+            self.currencyLabel.text = currency
+        }
+    }
+    
+    func didFailWithError(error: Error) {
+        print(error)
+    }
+}
+
+//MARK: - UIPickerView DataSource & Delegate
+
+extension ViewController: UIPickerViewDataSource, UIPickerViewDelegate {
     
     //determines how many columns are in the picker
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -32,30 +63,4 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         coinManager.getCoinPrice(for: selectedCurrency)
         print(coinManager.currencyArray[row])
     }
-    
-
-    @IBOutlet weak var bitcoinLabel: UILabel!
-    @IBOutlet weak var currencyLabel: UILabel!
-    @IBOutlet weak var currencyPicker: UIPickerView!
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        currencyPicker.dataSource = self
-        //sets the VC class as the delegate of the currencyPicker
-        currencyPicker.delegate = self
-    }
-
-
 }
-
-extension ViewController: CoinManagerDelegate {
-    
-    func didUpdateRate(_ coinManager: CoinManager) {
-    }
-    
-    func didFailWithError(error: Error) {
-        print(error)
-    }
-    
-    
-}
-
